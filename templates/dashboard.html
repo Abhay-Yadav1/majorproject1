@@ -1,0 +1,57 @@
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Heart Disease Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Doctor's Dashboard</h1>
+            <p>Welcome, Dr. {{ username }}</p>
+        </header>
+
+        <nav class="dashboard-nav">
+            <a href="{{ url_for('dashboard') }}" class="nav-active">Dashboard</a>
+            <a href="{{ url_for('new_prediction') }}">New Prediction</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+
+        <div class="dashboard-grid">
+            <div class="stats-card">
+                <h3>Total Predictions</h3>
+                <p class="stat-number">{{ total_predictions }}</p>
+            </div>
+            
+            <div class="stats-card">
+                <h3>Positive Cases</h3>
+                <p class="stat-number">{{ positive_cases }}</p>
+            </div>
+            
+            <div class="stats-card">
+                <h3>Accuracy Rate</h3>
+                <p class="stat-number">{{ accuracy_rate }}%</p>
+            </div>
+            
+            <div class="stats-card">
+                <h3>Recent Activity</h3>
+                <p class="stat-number">{{ recent_activity }}</p>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="{{ url_for('new_prediction') }}" class="action-btn">
+                    ➕ New Prediction
+                </a>
+               
+                
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+      <h1>Prediction Result</h1>
+        </header>
+
+        <div class="result-container">
+            <div class="result-card {% if 'Detected' in result %}positive{% else %}negative{% endif %}">
+                <h2 class="result-title">{{ result }}</h2>
+                <p class="confidence">Confidence: {{ confidence }}%</p>
+                
+                <div class="features-list">
+                    <h3>Input Features:</h3>
+                    {% for feature, value in features.items() %}
+                    <div class="feature-item">
+                        <span><strong>{{ feature }}:</strong></span>
+                        <span>{{ value }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <a href="/new_prediction" class="back-btn">Make Another Prediction</a>
+                       
+          <div class="user-info">
+              <p>Welcome, {{ username }}! | <a href="{{ url_for('dashboard') }}">Home</a> | <a href="{{ url_for('logout') }}">Logout</a></p>
+         </div>
+       
+        </div>
+    </div>
+</body>
+</html>

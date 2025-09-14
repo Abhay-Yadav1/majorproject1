@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <!-- Add this to your index.html header -->
+
+           <h1>❤️ Heart Disease Prediction System</h1>
+           <p>Welcome, {{ username }}! | <a href="{{ url_for('logout') }}">Logout</a></p>
+           <p>Enter patient details to predict heart disease risk</p>
+
+        </header>
+
+        <form action="/predict" method="POST" class="prediction-form">
+            <div class="form-grid">
+                <!-- Personal Information -->
+                <div class="form-group">
+                    <label for="age">Age (years):</label>
+                    <input type="number" id="age" name="age" required min="20" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="sex">Sex:</label>
+                    <select id="sex" name="sex" required>
+                        <option value="0">Female</option>
+                        <option value="1">Male</option>
+                    </select>
+                </div>
+
+                <!-- Chest Pain Type -->
+                <div class="form-group">
+                    <label for="cp">Chest Pain Type:</label>
+                    <select id="cp" name="cp" required>
+                        <option value="0">Typical Angina</option>
+                        <option value="1">Atypical Angina</option>
+                        <option value="2">Non-anginal Pain</option>
+                        <option value="3">Asymptomatic</option>
+                    </select>
+                </div>
+
+                <!-- Vital Signs -->
+                <div class="form-group">
+                    <label for="trestbps">Resting BP (mm Hg):</label>
+                    <input type="number" id="trestbps" name="trestbps" required min="90" max="200">
+                </div>
+
+                <div class="form-group">
+                    <label for="chol">Cholesterol (mg/dL):</label>
+                    <input type="number" id="chol" name="chol" required min="100" max="600">
+                </div>
+
+                <div class="form-group">
+                    <label for="thalach">Max Heart Rate:</label>
+                    <input type="number" id="thalach" name="thalach" required min="60" max="220">
+                </div>
+
+                <!-- Medical History -->
+                <div class="form-group">
+                    <label for="fbs">Fasting Blood Sugar > 120 mg/dL:</label>
+                    <select id="fbs" name="fbs" required>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="restecg">Resting ECG:</label>
+                    <select id="restecg" name="restecg" required>
+                        <option value="0">Normal</option>
+                        <option value="1">ST-T Wave Abnormality</option>
+                        <option value="2">Left Ventricular Hypertrophy</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exang">Exercise Induced Angina:</label>
+                    <select id="exang" name="exang" required>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="oldpeak">ST Depression (oldpeak):</label>
+                    <input type="number" id="oldpeak" name="oldpeak" step="0.1" required min="0" max="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="slope">Slope of Peak Exercise ST:</label>
+                    <select id="slope" name="slope" required>
+                        <option value="0">Upsloping</option>
+                        <option value="1">Flat</option>
+                        <option value="2">Downsloping</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ca">Number of Major Vessels:</label>
+                    <input type="number" id="ca" name="ca" required min="0" max="4">
+                </div>
+
+                <div class="form-group">
+                    <label for="thal">Thalassemia:</label>
+                    <select id="thal" name="thal" required>
+                        <option value="0">Normal</option>
+                        <option value="1">Fixed Defect</option>
+                        <option value="2">Reversible Defect</option>
+                        <option value="3">Unknown</option>
+                    </select>
+                </div>
+                <input type="hidden" id="age_chol_interaction" name="age_chol_interaction" value="0">
+                <input type="hidden" id="age_group_encoded" name="age_group_encoded" value="0">
+            </div>
+
+            <button type="submit" class="predict-btn">Predict Heart Disease Risk</button>
+        </form>
+    </div>
+    <script>
+        // JavaScript to calculate the engineered features automatically
+        document.addEventListener('DOMContentLoaded', function() {
+            const ageInput = document.getElementById('age');
+            const cholInput = document.getElementById('chol');
+            const ageCholInteractionInput = document.getElementById('age_chol_interaction');
+            const ageGroupEncodedInput = document.getElementById('age_group_encoded');
+
+            function calculateEngineeredFeatures() {
+                const age = parseFloat(ageInput.value) || 0;
+                const chol = parseFloat(cholInput.value) || 0;
+                
+                // Calculate age_chol_interaction
+                const ageCholInteraction = age * chol;
+                ageCholInteractionInput.value = ageCholInteraction;
+                
+                // Calculate age_group_encoded
+                let ageGroupEncoded;
+                if (age < 40) {
+                    ageGroupEncoded = 0; // Young
+                } else if (age < 60) {
+                    ageGroupEncoded = 1; // Middle-Aged
+                } else {
+                    ageGroupEncoded = 2; // Senior
+                }
+                ageGroupEncodedInput.value = ageGroupEncoded;
+                
+                console.log('Engineered features calculated:');
+                console.log('Age-Chol Interaction:', ageCholInteraction);
+                console.log('Age Group Encoded:', ageGroupEncoded);
+            }
+
+            // Recalculate when age or cholesterol changes
+            ageInput.addEventListener('input', calculateEngineeredFeatures);
+            cholInput.addEventListener('input', calculateEngineeredFeatures);
+
+            // Also calculate on form submit to ensure latest values
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                calculateEngineeredFeatures();
+                console.log('Final values before submission:');
+                console.log('age_chol_interaction:', ageCholInteractionInput.value);
+                console.log('age_group_encoded:', ageGroupEncodedInput.value);
+            });
+
+            // Initial calculation if values exist
+            calculateEngineeredFeatures();
+        });
+    </script>
+</body>
+</html>
